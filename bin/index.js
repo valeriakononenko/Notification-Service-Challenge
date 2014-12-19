@@ -1,5 +1,3 @@
-
-
 var util = require('util');
 var http = require('http');
 
@@ -7,10 +5,8 @@ var kue = require('kue');
 var mongodb = require('mongodb');
 var async = require('node-async');
 
-
 var config = require('../var/config/config.json');
 var vk = require('../var/mock/vkontakte-api.js');
-
 
 /**
  * @namespace
@@ -383,7 +379,7 @@ service.queue.__q = kue.createQueue();
 /**
  * @type {number}
  */
-service.queue.card = 0;
+service.queue.PORT = 3000;
 
 
 /**
@@ -405,6 +401,12 @@ service.queue.ITEM_CONCURRENCY = 3;
 
 
 /**
+ * @type {number}
+ */
+service.queue.ITEM_DELAY = 334;
+
+
+/**
  * @param {!Object} config
  */
 service.queue.init = function(config) {
@@ -416,10 +418,13 @@ service.queue.init = function(config) {
   service.queue.ITEM_CONCURRENCY =
       config.concurrency || service.queue.ITEM_CONCURRENCY;
 
-  var port = Number(config.port) || 3000;
+  service.queue.ITEM_DELAY = Math.ceil(
+      service.queue.ITEM_LIMIT / service.queue.ITEM_CONCURRENCY);
 
-  kue.app.listen(port);
-  console.log('UI started on port ' + String(port) + '\n');
+  service.queue.PORT = Number(config.port) || service.queue.PORT;
+
+  kue.app.listen(service.queue.PORT);
+  console.log('UI started on port ' + String(service.queue.PORT) + '\n');
 };
 
 
@@ -642,8 +647,7 @@ service.rest.service = function(response, template) {
 
     async.proc.fold.parallel(
         service.queue.createJob(
-            service.queue.ITEM_ATTEMPTS,
-            service.queue.ITEM_LIMIT / service.queue.ITEM_CONCURRENCY),
+            service.queue.ITEM_ATTEMPTS, service.queue.ITEM_DELAY),
         async.input.ARRAY_ITERATOR, async.output.NOP_COLLECTOR),
 
     service.queue.execute('notification', service.sendVkNotification,
@@ -682,5 +686,5 @@ service.init = function(config) {
 
 service.init(config);
 
-module.exports = async;
+module.exports = service;
 
