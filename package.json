@@ -1,0 +1,9 @@
+{
+  "name": "notify-challenge",
+  "version": "0.0.1",
+  "dependencies": {
+    "kue": "0.8.11",
+    "mongodb": "1.4.24",
+    "node-async": "0.7.4"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "mongodb": {
+    "db": "test",
+    "host": "localhost",
+    "port": 27017
+  },
+
+  "vk": {
+    "host": "localhost",
+    "port": 8088
+  },
+
+  "queue": {
+    "attempts": 100,
+    "limit": 1000,
+    "concurrency": 3,
+    "port": 3000
+  },
+
+  "rest": {
+    "host": "localhost",
+    "port": 19991
+  },
+
+  "template_tag": "%name%",
+  "id_limit": 100
+}
